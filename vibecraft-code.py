@@ -15,8 +15,8 @@ load_dotenv()
 async def main():
     print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: claude)")
     # TODO: TEST WIP
-    engine = "gemini"
-    # engine = input("모델: ").strip().lower() or "claude"
+    # engine = "gemini"
+    engine = input("모델: ").strip().lower() or "claude"
     client = VibeCraftClient(engine)
 
     try:
