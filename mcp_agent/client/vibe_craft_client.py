@@ -82,19 +82,21 @@ class VibeCraftClient:
                 print(f"⚠️ 서버 연결 실패: {', '.join([t.name for t in mcp_servers])} - {e}")
 
     async def execute_step(
-        self, prompt: str,
+        self, prompt: str, system: Optional[str] = None,
         use_langchain: Optional[bool] = True,
     ) -> str:
         if use_langchain:
-            return await self.engine.generate_langchain(prompt=prompt)
+            return await self.engine.generate_langchain(prompt=prompt, system=system)
         return await self.engine.generate(prompt=prompt)
 
     async def execute_stream_step(
-        self, prompt: str,
+        self, prompt: str, system: Optional[str] = None,
         use_langchain: Optional[bool] = True,
     ):
         if use_langchain:
-            async for chunk in self.engine.stream_generate_langchain(prompt=prompt):
+            async for chunk in self.engine.stream_generate_langchain(
+                    prompt=prompt, system=system
+            ):
                 yield chunk
         else:
             async for chunk in self.engine.stream_generate(prompt=prompt):
@@ -114,8 +116,8 @@ class VibeCraftClient:
         await self.load_tools(self.topic_mcp_server)
 
         print("\n🚦 Step 1: 주제 설정")
-        prompt = set_topic_prompt(topic_prompt)
-        result = await self.execute_step(prompt)
+        system, human = set_topic_prompt(topic_prompt)
+        result = await self.execute_step(human, system)
         print(result)
 
     async def topic_selection_menu_handler(self):
@@ -155,14 +157,14 @@ class VibeCraftClient:
 
     async def generate_data(self) -> pd.DataFrame:
         print("\n🚦 Step 2: 주제 기반 샘플 데이터를 생성")
-        prompt = generate_sample_prompt()
-        sample_data = await self.execute_step(prompt)
+        system, human = generate_sample_prompt()
+        sample_data = await self.execute_step(human, system)
         df = FileUtils.markdown_table_to_df(sample_data)
 
         return df
 
     def upload_data(self, file_path: Optional[str] = None):
-        print("\n🚦 Step 2: 데이터 업로드")
+        print("\n🚦 Step 2-1: 데이터 업로드")
 
         if file_path:
             self.data = FileUtils.load_local_files([file_path])
@@ -181,9 +183,9 @@ class VibeCraftClient:
         print(f"\n📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}")
 
         # 2. 컬럼 삭제 추천
-        removal_prompt = recommend_removal_column_prompt(df)
+        system, human = recommend_removal_column_prompt(df)
         print("\n🧹 컬럼 삭제 추천 요청 중...")
-        suggestion = await self.execute_step(removal_prompt)
+        suggestion = await self.execute_step(human, system)
         print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
 
         return df, suggestion
@@ -191,8 +193,8 @@ class VibeCraftClient:
     async def data_save(self, df: pd.DataFrame, to_drop: List[str]):
         """데이터 저장 처리"""
         print("\n💾 SQLite 테이블화 요청 중...")
-        prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
-        result = await self.execute_step(prompt)
+        system, human = df_to_sqlite_with_col_filter_prompt(df, to_drop)
+        result = await self.execute_step(human, system)
         print(f"Mapped Column dictionary: {result}")
 
         new_col = FileUtils.parse_first_row_dict_from_text(result)
@@ -209,6 +211,9 @@ class VibeCraftClient:
 
     async def data_handler(self, df: Optional[pd.DataFrame] = None) -> bool:
         """데이터 처리 메뉴 핸들러"""
+
+        print("\n🚦 Step 2-2: 데이터 수정")
+
         is_running = True
 
         if df is None:
@@ -234,6 +239,8 @@ class VibeCraftClient:
         return is_running
 
     async def recommend_visualization_type(self) -> VisualizationRecommendationResponse:
+        print("\n🚦 Step 2-3: 주제와 데이터 기반 시각화 방식 설정")
+
         stats = self.engine.get_conversation_stats()
         if stats['has_summary']:
             user_context = stats["summary"]
@@ -242,8 +249,8 @@ class VibeCraftClient:
             stats = self.engine.get_conversation_stats()
             user_context = stats["summary"]
 
-        prompt = recommend_visualization_template_prompt(self.data, user_context)
-        result = await self.execute_step(prompt)
+        system, human = recommend_visualization_template_prompt(self.data, user_context)
+        result = await self.execute_step(human, system)
 
         recommendations = FileUtils.parse_visualization_recommendation(result)
         return VisualizationRecommendationResponse(
