@@ -1,0 +1,11 @@
+/.venv/
+/.env
+/data-store/
+/web_output/
+__pycache__/
+*.pyc
+/chat-data/
+/.idea/shelf/
+misc.xml
+workspace.xml
+/vibecraft-app-python-log/
