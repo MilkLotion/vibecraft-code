@@ -4,18 +4,68 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 import subprocess
 import asyncio
 import logging
+import shutil
+import os
 from typing import Dict, Any, Union
+
+# Environment loading
+from dotenv import load_dotenv
 
 # Custom imports
 from mcp_agent.schemas import VisualizationType
 
 
 class VibeCraftAgentRunner:
-    """간소화된 VibeCraft Agent CLI 실행 클래스"""
+    """npm으로 전역 설치된 VibeCraft Agent CLI 실행 클래스"""
 
-    def __init__(self, agent_command: str = "./vibecraft-agent/vibecraft-agent"):
+    def __init__(self, agent_command: str = "vibecraft-agent", auto_load_env: bool = True):
+        """
+        초기화
+
+        Args:
+            agent_command: 실행할 명령어 (기본값: "vibecraft-agent")
+                          npm 전역 설치 시 "vibecraft-agent"
+                          로컬 개발 시 "./vibecraft-agent/vibecraft-agent" 등으로 지정 가능
+            auto_load_env: .env 파일 자동 로딩 여부 (기본값: True)
+        """
         self.agent_command = agent_command
         self.logger = logging.getLogger(__name__)
+
+        if auto_load_env:
+            load_dotenv()
+
+    @staticmethod
+    def check_gemini_api_key() -> Dict[str, Any]:
+        """GEMINI_API_KEY 환경 변수 확인"""
+        api_key = os.getenv("GEMINI_API_KEY")
+
+        if not api_key:
+            return {
+                "exists": False,
+                "message": "GEMINI_API_KEY 환경 변수가 설정되지 않았습니다.",
+                "recommendation": ".env 파일에 GEMINI_API_KEY=your_api_key를 추가해주세요."
+            }
+
+        if not api_key.strip():
+            return {
+                "exists": False,
+                "message": "GEMINI_API_KEY가 비어있습니다.",
+                "recommendation": ".env 파일에서 올바른 API 키를 설정해주세요."
+            }
+
+        # API 키 형식 간단 검증 (일반적으로 Gemini API 키는 특정 패턴을 가짐)
+        if len(api_key.strip()) < 10:
+            return {
+                "exists": False,
+                "message": "GEMINI_API_KEY가 너무 짧습니다. 올바른 API 키인지 확인해주세요.",
+                "recommendation": "Gemini API 콘솔에서 올바른 API 키를 확인해주세요."
+            }
+
+        return {
+            "exists": True,
+            "message": "GEMINI_API_KEY가 올바르게 설정되었습니다.",
+            "key_preview": f"{api_key[:8]}...{api_key[-4:]}" if len(api_key) > 12 else "***"
+        }
 
     def run_agent(
             self,
@@ -23,9 +73,20 @@ class VibeCraftAgentRunner:
             visualization_type: Union[str, VisualizationType],
             user_prompt: str,
             output_dir: str = "./output",
-            debug: bool = False
+            debug: bool = False,
+            skip_api_key_check: bool = False
     ) -> Dict[str, Any]:
         """동기 방식으로 vibecraft-agent를 실행합니다."""
+
+        # GEMINI_API_KEY 확인
+        if not skip_api_key_check:
+            api_key_status = self.check_gemini_api_key()
+            if not api_key_status["exists"]:
+                return {
+                    "success": False,
+                    "message": "API 키 확인 실패",
+                    "error_details": api_key_status
+                }
 
         viz_type_str = self._get_type_string(visualization_type)
 
@@ -67,9 +128,28 @@ class VibeCraftAgentRunner:
             visualization_type: Union[str, VisualizationType],
             user_prompt: str,
             output_dir: str = "./output",
-            debug: bool = False
+            debug: bool = False,
+            skip_api_key_check: bool = False
     ):
         """비동기 방식으로 실행하며 실시간 출력을 yield합니다."""
+
+        # GEMINI_API_KEY 확인
+        if not skip_api_key_check:
+            yield {"type": "info", "message": "GEMINI_API_KEY 확인 중..."}
+            api_key_status = self.check_gemini_api_key()
+
+            if not api_key_status["exists"]:
+                yield {
+                    "type": "error",
+                    "message": "API 키 확인 실패",
+                    "details": api_key_status
+                }
+                return
+            else:
+                yield {
+                    "type": "success",
+                    "message": f"API 키 확인 완료: {api_key_status['key_preview']}"
+                }
 
         viz_type_str = self._get_type_string(visualization_type)
 
@@ -179,29 +259,85 @@ class VibeCraftAgentRunner:
             return False
 
     def is_available(self) -> bool:
-        """명령어 사용 가능 여부 확인"""
+        """명령어 사용 가능 여부 확인 (npm 전역 설치 고려)"""
         try:
-            result = subprocess.run([self.agent_command, "--help"],
-                                    capture_output=True, timeout=10)
-            return result.returncode == 0
-        except:
+            # shutil.which()를 사용하여 PATH에서 명령어 검색
+            command_path = shutil.which(self.agent_command)
+            if command_path is None:
+                self.logger.warning(f"'{self.agent_command}' 명령어를 PATH에서 찾을 수 없습니다.")
+                return False
+
+            # --help 옵션으로 명령어 실행 테스트
+            result = subprocess.run(
+                [self.agent_command, "--help"],
+                capture_output=True,
+                timeout=10,
+                text=True
+            )
+
+            if result.returncode == 0:
+                self.logger.info(f"vibecraft-agent 사용 가능 (경로: {command_path})")
+                return True
+            else:
+                self.logger.error(f"명령어 실행 실패: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            self.logger.error("명령어 실행 시간 초과")
+            return False
+        except Exception as e:
+            self.logger.error(f"명령어 확인 중 오류 발생: {e}")
             return False
 
+    def get_installation_info(self) -> Dict[str, Any]:
+        """설치 정보 및 상태를 반환합니다."""
+        command_path = shutil.which(self.agent_command)
 
-# TODO: WIP
+        info = {
+            "command": self.agent_command,
+            "available": self.is_available(),
+            "path": command_path,
+            "installation_method": "unknown",
+            "gemini_api_key": self.check_gemini_api_key()
+        }
+
+        if command_path:
+            # npm 전역 설치인지 확인
+            if "npm" in command_path or "node_modules" in command_path:
+                info["installation_method"] = "npm_global"
+            elif command_path.startswith("./") or command_path.startswith("/"):
+                info["installation_method"] = "local_binary"
+
+        return info
+
+
 # 사용 예시
 if __name__ == "__main__":
-    # 인스턴스 생성
+    # 기본 인스턴스 생성 (npm 전역 설치 가정, .env 자동 로딩)
     runner = VibeCraftAgentRunner()
+
+    # 설치 정보 확인 (API 키 상태 포함)
+    install_info = runner.get_installation_info()
+    print(f"설치 정보: {install_info}")
+
+    # GEMINI_API_KEY 단독 확인
+    api_key_status = runner.check_gemini_api_key()
+    print(f"API 키 상태: {api_key_status}")
 
     # 사용 가능 여부 확인
     if runner.is_available():
         print("vibecraft-agent 사용 가능")
 
+        # API 키가 없는 경우 경고 출력
+        if not api_key_status["exists"]:
+            print(f"⚠️  경고: {api_key_status['message']}")
+            print(f"💡 해결 방법: {api_key_status['recommendation']}")
+            print("API 키 없이 실행하려면 skip_api_key_check=True로 설정하세요.")
+
         # Enum을 사용한 실행
         result = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type=VisualizationType.TIME_SERIES,  # Enum 사용
+            visualization_type=VisualizationType.TIME_SERIES,
             user_prompt="월별 매출 추이를 보여주는 대시보드",
             output_dir="./output",
             debug=True
@@ -214,19 +350,22 @@ if __name__ == "__main__":
         else:
             print("실패!")
             print(result["message"])
+            if "error_details" in result:
+                print(f"상세 오류: {result['error_details']}")
 
-        # 문자열을 사용한 실행 (하위 호환성)
-        result2 = runner.run_agent(
+        # API 키 체크를 건너뛰는 실행 예시
+        result_skip_check = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type="kpi-dashboard",  # 문자열 사용
+            visualization_type="kpi-dashboard",
             user_prompt="KPI 대시보드",
-            output_dir="./output"
+            output_dir="./output",
+            skip_api_key_check=True  # API 키 체크 건너뛰기
         )
 
         # 개발 예정 타입 테스트
         result3 = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type=VisualizationType.GEO_SPATIAL,  # 개발 예정 타입
+            visualization_type=VisualizationType.GEO_SPATIAL,
             user_prompt="지역별 분석",
             output_dir="./output"
         )
@@ -234,3 +373,25 @@ if __name__ == "__main__":
 
     else:
         print("vibecraft-agent 명령어를 찾을 수 없습니다.")
+        print("다음 명령어로 설치해주세요: npm install -g vibecraft-agent")
+
+    # 로컬 개발 환경에서 사용할 경우의 예시
+    print("\n--- 로컬 개발 환경 예시 ---")
+    local_runner = VibeCraftAgentRunner("./vibecraft-agent/vibecraft-agent")
+    local_info = local_runner.get_installation_info()
+    print(f"로컬 설치 정보: {local_info}")
+
+    # 비동기 실행 예시
+    print("\n--- 비동기 실행 예시 ---")
+
+
+    async def async_example():
+        async for output in runner.run_agent_async(
+                sqlite_path="/path/to/data.sqlite",
+                visualization_type=VisualizationType.TIME_SERIES,
+                user_prompt="비동기 테스트",
+                output_dir="./output"
+        ):
+            print(f"[{output['type']}] {output['message']}")
+
+    # asyncio.run(async_example())  # 주석 해제하여 실행
