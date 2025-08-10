@@ -13,14 +13,12 @@ load_dotenv()
 
 
 async def main():
-    # TODO: TEST WIP
     # print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: claude)")
     # engine = input("모델: ").strip().lower() or "claude"
     engine = "gemini"
     client = VibeCraftClient(engine)
 
     try:
-        # TODO: TEST WIP
         # topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
         topic = input("🎤 주제를 입력하세요: ").strip()
 
