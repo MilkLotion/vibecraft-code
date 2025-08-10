@@ -154,7 +154,7 @@ $ python main.py
 │   └── prompts.py            # LLM prompts
 │
 ├── config.py                 # Config
-├── vibecraft-code.py         # VibeCraft cli workflow
+├── main.py                   # VibeCraft cli workflow
 ├── .env                      # Environment variables (optional)
 └── README.md
 ```
