@@ -1942,15 +1942,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyjwt"
-version = "2.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0c/c6/3cdc7cb1289b35186fd7fd61836b6d83632ca0f7eee552516777361667b1/PyJWT-2.1.0.tar.gz", hash = "sha256:fba44e7898bbca160a2b2b501f492824fc8382485d3a6f11ba5d0c1937ce6130", size = 60092, upload-time = "2021-04-28T12:02:53.832Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/32/d5d3cab27fee7f6b22d7cd7507547ae45d52e26030fa77d1f83d0526c6e5/PyJWT-2.1.0-py3-none-any.whl", hash = "sha256:934d73fbba91b0483d3857d1aff50e96b2a892384ee2c17417ed3203f173fca1", size = 16755, upload-time = "2021-04-28T12:02:52.182Z" },
-]
-
-[[package]]
 name = "pyparsing"
 version = "3.2.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2484,9 +2475,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pillow" },
     { name = "pydantic" },
-    { name = "pyjwt" },
     { name = "sqlalchemy" },
-    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -2505,9 +2494,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "pyjwt", specifier = "==2.1.0" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
-    { name = "uvicorn", specifier = ">=0.35.0" },
 ]
 
 [[package]]
