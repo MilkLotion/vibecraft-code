@@ -292,58 +292,6 @@ class VibeCraftClient:
         except Exception as e:
             return {"success": False, "message": str(e)}
 
-    async def stream_run_code_generator(
-            self, thread_id: str, visualization_type: VisualizationType,
-            project_name: str = None, model: str = "flash"
-    ):
-        """비동기 스트림 방식 코드 생성 (SSE용)"""
-
-        yield SSEEventBuilder.create_info_event("🚦 Step 3: 웹앱 코드 생성 시작")
-
-        runner = VibeCraftAgentRunner()
-        file_name = f"{thread_id}.sqlite"
-
-        # 전제 조건 확인
-        if not runner.is_available():
-            yield SSEEventBuilder.create_error_event("vibecraft-agent를 사용할 수 없습니다.")
-            return
-
-        if not PathUtils.is_exist(thread_id, file_name):
-            yield SSEEventBuilder.create_error_event(f"SQLite 파일을 찾을 수 없습니다: {file_name}")
-            return
-
-        yield SSEEventBuilder.create_info_event("✅ 사전 검증 완료")
-
-        file_path = PathUtils.get_path(thread_id, file_name)[0]
-        output_dir = f"./output/{thread_id}"
-
-        try:
-            async for event in runner.run_agent_async(
-                    sqlite_path=file_path,
-                    visualization_type=visualization_type,
-                    user_prompt=self.get_summary(),
-                    output_dir=output_dir,
-                    project_name=project_name or f"vibecraft-{thread_id}",
-                    model=model
-            ):
-                # 이벤트 타입별 SSE 변환
-                event_type = event.get("type", "info")
-                message = event.get("message", "")
-
-                if event_type == "error":
-                    yield SSEEventBuilder.create_error_event(message)
-                elif event_type == "stdout":
-                    yield SSEEventBuilder.create_ai_message_chunk(message)
-                elif event.get("step") == "execution_complete":
-                    yield SSEEventBuilder.create_info_event("🎉 웹앱 코드 생성 완료!")
-                    yield SSEEventBuilder.create_complete_event(thread_id)
-                    return
-                else:
-                    yield SSEEventBuilder.create_ai_message_chunk(message)
-
-        except Exception as e:
-            yield SSEEventBuilder.create_error_event(f"코드 생성 중 오류: {str(e)}")
-
     """Deploy Methods"""
     # TODO: WIP
     async def step_deploy(self):
