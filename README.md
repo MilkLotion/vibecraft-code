@@ -36,8 +36,8 @@ This project is built on the [Model Context Protocol (MCP)](https://modelcontext
 ### 🛠 Environment Setup
 #### 1. Clone the repository
 ```bash
-git clone https://github.com/vibecraft25/vibecraft-backend.git
-cd vibecraft-backend
+git clone https://github.com/vibecraft25/vibecraft-code.git
+cd vibecraft-code
 ```
 #### 2. Install [`uv`](https://github.com/astral-sh/uv) (Python project manager)
 ```bash
