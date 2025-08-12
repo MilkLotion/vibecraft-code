@@ -11,8 +11,6 @@ import yaml
 class Settings(BaseSettings):
     version: str
 
-    mcp_path: str
-
     chat_path: str
     file_path: str
 
@@ -26,7 +24,6 @@ class Settings(BaseSettings):
 
         return cls(
             version=config["version"],
-            mcp_path=config["resource"]["mcp"],
             chat_path=config["path"]["chat"],
             file_path=config["path"]["file"],
         )

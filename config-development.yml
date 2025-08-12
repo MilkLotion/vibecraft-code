@@ -1,8 +1,5 @@
 version: "1.0.0"
 
-resource:
-  mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/servers"
-
 path:
   chat: "./chat-data"
   file: "./data-store"

@@ -19,8 +19,8 @@ async def main():
     client = VibeCraftClient(engine)
 
     try:
-        # topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
-        topic = input("🎤 주제를 입력하세요: ").strip()
+        topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
+        # topic = input("🎤 주제를 입력하세요: ").strip()
 
         await client.run_pipeline(topic)
     finally:
