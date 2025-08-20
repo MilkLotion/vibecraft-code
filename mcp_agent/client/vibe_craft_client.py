@@ -252,6 +252,7 @@ class VibeCraftClient:
 
         system, human = recommend_visualization_template_prompt(self.data, user_context)
         result = await self.execute_step(human, system)
+        print(result)
 
         recommendations = FileUtils.parse_visualization_recommendation(result)
         return VisualizationRecommendationResponse(
@@ -317,6 +318,7 @@ class VibeCraftClient:
             pass
         # Step: 2-3
         v_type = (await self.recommend_visualization_type()).get_top_recommendation()
+        print(f"💻 가장 높은 점수의 시각화 타입인 {v_type}으로 코드 생성을 진행합니다...")
         # Step: 3
         result = self.run_code_generator(self.get_thread_id(), v_type.visualization_type)
         # await self.step_deploy()
