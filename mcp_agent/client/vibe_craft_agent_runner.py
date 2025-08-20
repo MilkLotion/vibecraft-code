@@ -471,7 +471,7 @@ if __name__ == "__main__":
 
         print("=== 딕셔너리 형태 출력 예시 ===")
         async for output in runner.run_agent_stream(
-                sqlite_path="../../data-store/0986a3c9-d406-459c-9e0b-1e89f122adf0/0986a3c9-d406-459c-9e0b-1e89f122adf0.sqlite",
+                sqlite_path="./data-store/test.sqlite",
                 visualization_type=VisualizationType.TIME_SERIES,
                 user_prompt="월별 매출 추이를 보여주는 대시보드",
                 output_dir="./output/test",
