@@ -319,7 +319,6 @@ class VibeCraftClient:
         v_type = (await self.recommend_visualization_type()).get_top_recommendation()
         # Step: 3
         result = self.run_code_generator(self.get_thread_id(), v_type.visualization_type)
-        breakpoint()
         # await self.step_deploy()
 
     async def test(self):
