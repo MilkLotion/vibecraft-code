@@ -199,13 +199,15 @@ def df_to_sqlite_with_col_filter_prompt(
         "DISTINCT, COUNT, SUM, AVG, MAX, MIN, DATE, TIME, TIMESTAMP, INT, VARCHAR, "
         "TEXT, BLOB, BOOLEAN, FLOAT, DOUBLE, DECIMAL, CHAR, BINARY\n\n"
 
-        "**컬럼 제거 기준:**\n"
+        "**컬럼 제거 기준 (최대 5개까지만 제거 추천):**\n"
         "1. 중복 정보 (다른 컬럼과 동일한 의미)\n"
         "2. 높은 결측률 (70% 이상 NULL)\n"
         "3. 단일값 컬럼 (모든 행이 동일한 값)\n"
         "4. 임시 식별자 (임시 ID, 인덱스 번호)\n"
         "5. 메타데이터 (파일명, 생성일시 등 분석 무관 정보)\n"
-        "6. 개인정보 (개인식별 가능한 민감 정보)\n\n"
+        "6. 개인정보 (개인식별 가능한 민감 정보)\n"
+        "** ✅ 삭제 컬럼은 가장 불필요한 것부터 우선순위를 정하여 최대 5개까지만 추천 **\n"
+        "** 삭제 기준에 해당하더라도 데이터 분석에 중요한 컬럼은 보존 **\n\n"
 
         "**영문 변환 예시 (반드시 이렇게 변환):**\n"
         "- '어획 연도' → 'catch_yr' 또는 'fishing_year'\n"
@@ -229,7 +231,7 @@ def df_to_sqlite_with_col_filter_prompt(
         "**출력 형식 (엄격히 준수):**\n"
         "- 첫 번째 줄에만 Python dictionary 형태로 반환\n"
         "- dictionary의 key는 한글(원본), value는 반드시 영문만 사용\n"
-        "- 삭제 대상 컬럼은 매핑에서 제외\n"
+        "- 삭제 대상 컬럼은 매핑에서 제외 (최대 5개까지만)\n"
         "- 줄바꿈, 설명, 추가 텍스트 절대 금지\n"
         "- value에 한글이 포함되면 무효한 응답\n\n"
 
@@ -237,7 +239,8 @@ def df_to_sqlite_with_col_filter_prompt(
         "- 한국어 의미를 정확히 파악하여 가장 적절한 영문명으로 변환\n"
         "- 표준 축약어 우선 사용, 하지만 명확성 확보\n"
         "- 동일한 의미의 컬럼은 일관된 명명 방식 사용\n"
-        "- 개발팀이 이해하기 쉬운 직관적 영문명 선호"
+        "- 개발팀이 이해하기 쉬운 직관적 영문명 선호\n"
+        "- 삭제 추천은 신중하게 판단하여 최대 5개까지만 제한"
     )
 
     available_columns = list(df.columns)
