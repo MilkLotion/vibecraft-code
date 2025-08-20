@@ -262,7 +262,7 @@ class VibeCraftClient:
     """Code Generator Methods"""
     def run_code_generator(
             self, thread_id: str, visualization_type: VisualizationType,
-            project_name: str = None, model: str = "flash"
+            project_name: str = None, model: str = "pro"
     ) -> Dict[str, Any]:
         """동기 방식 코드 생성"""
         print("\n🚦 Step 3: 웹앱 코드 생성")
