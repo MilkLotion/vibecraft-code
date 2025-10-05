@@ -1,5 +1,16 @@
-version: "1.0.0"
+version:
+  server: "1.0.0"
+
+resource:
+#  data: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/storage"
+#  mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/mcp_agent/servers"
+  data: "C:/Users/Administrator/Desktop/Aircok/vibecraft-code/storage"
+  mcp: "C:/Users/Administrator/Desktop/Aircok/vibecraft-code/mcp_agent/servers"
 
 path:
   chat: "./chat-data"
   file: "./data-store"
+  chroma: "./chroma-db"
+
+log:
+  path: "./vibecraft-app-python-log"
