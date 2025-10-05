@@ -256,6 +256,52 @@ class VibeCraftClient:
             print(f"\n❌ 코드 생성 실패: {result['message']}")
             return result
 
+    async def chat_loop(self):
+        """
+        대화형 채팅 루프
+        사용자가 '종료', 'exit', 'quit' 등을 입력하면 종료됩니다.
+        """
+        print("\n💬 채팅 모드를 시작합니다.")
+        print("💡 종료하려면 '종료', 'exit', 'quit' 중 하나를 입력하세요.\n")
+
+        # MCP 도구 로드 (선택사항 - 필요에 따라 주석 해제)
+        # await self.load_tools(self.mcp_tools)
+
+        exit_commands = ['종료', 'exit', 'quit', '나가기', 'q']
+
+        while True:
+            try:
+                user_input = input("🎤 사용자: ").strip()
+
+                # 종료 명령 체크
+                if user_input.lower() in exit_commands:
+                    print("\n👋 채팅을 종료합니다.")
+                    break
+
+                # 빈 입력 체크
+                if not user_input:
+                    print("⚠️ 메시지를 입력해주세요.")
+                    continue
+
+                # AI 응답 생성
+                response = await self.execute_step(user_input)
+                print(f"\n🤖 AI: {response}\n")
+
+                # 대화 기록 저장
+                self.engine.save_chat_history()
+
+            except KeyboardInterrupt:
+                print("\n\n👋 Ctrl+C를 감지했습니다. 채팅을 종료합니다.")
+                break
+            except Exception as e:
+                print(f"\n❌ 오류 발생: {e}")
+                print("계속 진행하시겠습니까? (y/n): ", end="")
+                continue_choice = input().strip().lower()
+                if continue_choice != 'y':
+                    break
+
+        print("✅ 채팅이 종료되었습니다.")
+
     async def test(self):
         print("🔥 Run Test...")
         prompt = "주제를 자동으로 설정해줘"

@@ -26,6 +26,7 @@ async def main():
         # file = r"./samples/sample.csv"
 
         await client.run_pipeline(topic, file)
+        await client.chat_loop()
     finally:
         await client.cleanup()
 
