@@ -13,3 +13,4 @@ workspace.xml
 /output/
 /mcp_agent/client/output/
 /chroma-db/
+/.claude/settings.local.json
