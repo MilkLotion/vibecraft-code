@@ -19,11 +19,11 @@ async def main():
     client = VibeCraftClient(engine)
 
     try:
-        # topic = input("🎤 주제를 입력하세요: ").strip()
-        # file = input("🎤 파일 경로를 입력하세요: ").strip()
+        topic = input("🎤 주제를 입력하세요: ").strip()
+        file = input("🎤 파일 경로를 입력하세요: ").strip()
 
-        topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
-        file = r"./samples/sample.csv"
+        # topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
+        # file = r"./samples/sample.csv"
 
         await client.run_pipeline(topic, file)
     finally:
