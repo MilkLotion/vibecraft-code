@@ -14,3 +14,4 @@ workspace.xml
 /mcp_agent/client/output/
 /chroma-db/
 /.claude/settings.local.json
+/.config-development.yml

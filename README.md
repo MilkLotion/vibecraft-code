@@ -186,22 +186,18 @@ rag_engine = RAGEngine(
 )
 ```
 
-### RAG에 문서 추가
+### RAG 문서 추가
 
 ```python
-# 단일 문서 추가
-rag_engine.add_document("path/to/document.pdf")
-
-# 디렉토리의 모든 문서 추가
-result = rag_engine.add_documents_from_directory("./storage/documents")
-print(f"인덱싱됨: {result['success']}개 파일, 실패: {result['failed']}개 파일")
+# 본인의 로컬 프로젝트 RAG 문서 디렉토리에 맞게 경로 수정 (rag_engine.py)
+result = rag_engine.add_documents_from_directory("C:/Users/YourUsername/path/to/vibecraft-code/storage/documents")
 ```
 
 ### 문서 검색
 
 ```python
 # 관련 콘텐츠 검색
-results = rag_engine.search("판매 추세는 무엇인가요?", k=5)
+results = rag_engine.search("매출 및 판매 수익에 영향을 미치는 요인은 어떤 것들이 있나요?", k=5)
 
 for result in results:
     print(f"파일: {result.file_path}")
@@ -246,8 +242,8 @@ client = VibeCraftClient(engine)
 2. 자동화된 파이프라인 실행:
 ```python
 await client.run_pipeline(
-    topic_prompt="피자 판매 시각화 페이지 생성",
-    file_path="./samples/sample.csv"
+    topic_prompt="서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘",
+    file_path="./samples/dining.csv"
 )
 ```
 
@@ -267,27 +263,124 @@ await client.run_pipeline(
 ```bash
 $ python main.py
 
-🔌 topic_server, data_server에 연결됨
-서버 도구와 연결됨: ['set_topic', 'load_data', ...]
+--- Optimized Data Analysis LangGraph ---
+                              +-----------+
+                              | __start__ |
+                              +-----------+
+                                    *
+                                    *
+                                    *
+                                +-------+
+                              ..| agent |..
+                          ....  +-------+  ....
+                     .....         .           .....
+                 ....              .                .....
+              ...                 .                      ....
+     +-------+                    .                          ...
+     | tools |                    .                            .
+     +-------+                    .                            .
+          .                       .                            .
+          .                       .                            .
+          .                       .                            .
+  +--------------+                .                            .
+  | rag_analysis |                .                            .
+  +--------------+                .                            .
+          *                       .                            .
+          *                       .                            .
+          *                       .                            .
++-----------------+               .               +------------------------+
+| final_synthesis |               .               | summarize_conversation |
++-----------------+**              .              +------------------------+
+                     *****         .            *****
+                          ****      .       ****
+                              ***   .    ***
+                               +---------+
+                               | __end__ |
+                               +---------+
+
+🎤 주제를 입력하세요: (예: 서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘)
+🎤 파일 경로를 입력하세요: (예: ./samples/dining.csv)
 
 🚦 Step 1: 주제 선택
-✅ 주제 정형화 완료: 피자 일별 판매 시각화
+1. 분석 목표와 기대되는 인과관계
+.
+.
+.
+2. 필요한 데이터의 종류와 변수
+.
+.
+.
+3. 주요 분석 관점 (독립변수, 종속변수, 조절변수 등)
+.
+.
+.
+4. 예상되는 시각화 방향
+.
+.
+.
 
-🚦 Step 2-1: 데이터 업로드
-📊 로드됨: sample.csv (150행, 8컬럼)
+🚦 Step 2: 데이터 업로드
 
-🚦 Step 3: 데이터 처리
-🧹 컬럼 정규화 및 영문 번역 완료
-🧱 최종 데이터 형태: (150, 6)
+🚦 Step 3: 데이터 자동 전처리 및 저장
 
-🚦 Step 4: 인과관계 분석
-📊 분석: 요일과 판매량 사이의 강한 상관관계
+📊 데이터프레임 정제 완료
+몽탄 서울특별시 용산구 한강로1가 251-1 한식/육류     우대갈비/ 짚불삼겹살  4.6 10000+         32000원대                       매일 12:00 ~ 22:00
+금돼지식당    서울특별시 중구 신당동 370-2 한식/육류  본삼겹/ 등목살/ 김치찌개  4.5  8000+ 18000원 ~ 19000원                       매일 11:30 ~ 23:00
+다운타우너 안국     서울특별시 종로구 재동 85-3 양식/버거  아보카도 버거/ 베이컨치즈  4.5  9000+  8000원 ~ 12000원                       매일 11:00 ~ 21:00
+깡통만두    서울특별시 종로구 재동 84-22 한식/만두 칼만두/ 비빔국수/ 만두전골  4.4  2500+ 10000원 ~ 28000원 평일 11:30-21:00/ 토 11:30-20:00 (일요일 휴무)
 
-🚦 Step 5: 시각화 타입
-💡 자동 선택: dashboard (신뢰도: 85%)
+🧹 불필요한 컬럼 제거 및 영문 변환 중...
 
-🚦 Step 6: 코드 생성
-✅ 코드 생성 완료: ./output/abc123def/
+🤖 Agent 처리 결과:
+{
+   '몽탄': 'restaurant_nm',
+   '서울특별시 용산구 한강로1가 251-1': 'full_address',
+   '한식/육류': 'food_cat',
+   '우대갈비/ 짚불삼겹살': 'main_menu',
+   '4.6': 'rating',
+   '10000+': 'review_cnt',
+   '32000원대': 'price_range',
+   '매일 12:00 ~ 22:00': 'operating_hours'
+}
+
+🧱 최종 데이터:
+restaurant_nm     full_address                 food_cat       main_menu                rating   review_cnt    price_range           operating_hours
+금돼지식당          서울특별시 중구 신당동 370-2    한식/육류       본삼겹/ 등목살/ 김치찌개     4.5      8000+        18000원 ~ 19000원      매일 11:30 ~ 23:00
+다운타우너 안국      서울특별시 종로구 재동 85-3     양식/버거       아보카도 버거/ 베이컨치즈    4.5      9000+        8000원 ~ 12000원       매일 11:00 ~ 21:00
+깡통만두            서울특별시 종로구 재동 84-22    한식/만두       칼만두/ 비빔국수/ 만두전골   4.4      2500+        10000원 ~ 28000원      평일 11:30-21:00/ 토 11:30-20:00 (일요일 휴무)
+
+✅ SQLite 파일 저장 완료: ./data-store/fa74245f-0310-40e8-bcb4-6503fea22407\fa74245f-0310-40e8-bcb4-6503fea22407.sqlite
+✅ DB 메타데이터 저장 완료: ./data-store/fa74245f-0310-40e8-bcb4-6503fea22407\fa74245f-0310-40e8-bcb4-6503fea22407_meta.json
+
+🚦 Step 4: 데이터 인과관계 분석
+
+✅ 데이터 인과관계 분석 (잠정적 가설)
+.
+.
+.
+✅ 결론 및 추가 분석 제안
+.
+.
+.
+
+🚦 Step 5: 시각화 타입 자동 결정
+
+💡 자동 선택된 시각화 타입: comparison: 비교 분석 (그룹별 비교, 차이점 하이라이팅, 통계 요약) [구현됨] (신뢰도: 95%)
+
+💻 시각화 타입 'comparison: 비교 분석 (그룹별 비교, 차이점 하이라이팅, 통계 요약) [구현됨]'으로 코드 생성을 진행합니다...
+
+🚦 Step 6: 웹앱 코드 생성
+
+✅ 코드 생성 완료: ./output/fa74245f-0310-40e8-bcb4-6503fea22407
+✅ 파이프라인 완료! 생성된 코드: ./output/fa74245f-0310-40e8-bcb4-6503fea22407
+
+💬 채팅 모드를 시작합니다.
+💡 종료하려면 '종료', 'exit', 'quit' 중 하나를 입력하세요.
+
+🎤 사용자: quit/exit
+
+👋 채팅을 종료합니다.
+✅ 채팅이 종료되었습니다.
 ```
 
 ---
