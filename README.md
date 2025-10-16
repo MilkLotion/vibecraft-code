@@ -102,11 +102,6 @@ npm install -g vibecraft-agent
 ```
 
 #### 6. 프로젝트 설정 구성 (`config-development.yml`을 환경에 맞게 수정)
-
-- `resource.data`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
-- `resource.mcp`: MCP 서버 구현이 포함된 디렉토리
-- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
-
 ```yaml
 version:
   server: "1.0.0"
@@ -118,13 +113,18 @@ resource:
 
 # 모든 상대 경로는 프로젝트 루트에서 해석됩니다
 path:
-  chat: "./chat-data"
-  file: "./data-store"
-  chroma: "./chroma-db"  # RAG 벡터 데이터베이스 저장소
+  chat: "./chat-data"   # 채팅 기록 저장 경로
+  file: "./data-store"  # 데이터 파일 저장 경로
+  chroma: "./chroma-db" # RAG 벡터 데이터베이스 저장소
 
 log:
   path: "./vibecraft-app-python-log"
 ```
+- `resource.data`: 사용자가 업로드한 파일 및 분석 결과가 저장되는 경로
+- `resource.mcp`: MCP 서버 설정 파일들이 위치한 경로
+- `path.chat`: 대화 기록이 저장되는 디렉토리
+- `path.file`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
+- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
 
 #### 7. 환경 변수 설정 (`.env` 파일을 프로젝트 루트에 생성)
 **⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
@@ -135,7 +135,7 @@ echo. > .env
 touch .env
 ```
 ```bash
-# 커밋 및 공유 금지 !!
+# .env
 OPENAI_API_KEY=your_openai_api_key_here
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -179,7 +179,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 ## 🔧 RAG Engine Setup
 
-RAG(Retrieval-Augmented Generation) 엔진은 지능형 문서 검색 및 컨텍스트 인식 응답을 가능하게 합니다.
+**VibeCraft는 학술 논문 기반의 인과관계 분석을 위해 RAG(Retrieval-Augmented Generation) 엔진을 사용합니다.**
 
 ### RAG 엔진 인스턴스 생성
 
