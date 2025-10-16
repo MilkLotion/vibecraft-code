@@ -106,7 +106,6 @@ npm install -g vibecraft-agent
 - `resource.data`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
 - `resource.mcp`: MCP 서버 구현이 포함된 디렉토리
 - `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
-- 모든 상대 경로는 프로젝트 루트에서 해석됩니다
 
 ```yaml
 version:
@@ -117,6 +116,7 @@ resource:
   data: "C:/Users/YourUsername/path/to/vibecraft-code/storage"
   mcp: "C:/Users/YourUsername/path/to/vibecraft-code/mcp_agent/servers"
 
+# 모든 상대 경로는 프로젝트 루트에서 해석됩니다
 path:
   chat: "./chat-data"
   file: "./data-store"
@@ -142,8 +142,6 @@ GEMINI_API_KEY=your_gemini_api_key_here
 GOOGLE_API_KEY=your_google_api_key_here
 ```
 
----
-
 ### 🔑 GEMINI API KEY 발급 방법
 
 #### 1.Google AI Studio(https://aistudio.google.com) 접속 후 Get API key 클릭
@@ -160,6 +158,8 @@ GOOGLE_API_KEY=your_google_api_key_here
 #### 4. 프로젝트 선택 후 '키 만들기' 결과로 API 키 생성 완료
 ![](image-8.png) | ![](image-9.png) | ![](image-10.png)
 -----------------|------------------|------------------|
+
+---
 
 ## 🧠 Engine Architecture
 
