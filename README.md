@@ -101,30 +101,12 @@ npm install -g @google/gemini-cli
 npm install -g vibecraft-agent
 ```
 
-#### 6. 환경 변수 설정
-`.env` 파일을 프로젝트 루트에 생성:
+#### 6. 프로젝트 설정 구성 (`config-development.yml`을 환경에 맞게 수정)
 
-```bash
-# Windows
-echo. > .env
-# MacOS/Linux
-touch .env
-```
-
-**.env 파일 형식**
-
-⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️
-
-```text
-OPENAI_API_KEY=your_openai_api_key_here
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
-GOOGLE_API_KEY=your_google_api_key_here
-```
-
-#### 7. 프로젝트 설정 구성
-
-`config-development.yml`을 환경에 맞게 수정하세요:
+- `resource.data`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
+- `resource.mcp`: MCP 서버 구현이 포함된 디렉토리
+- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
+- 모든 상대 경로는 프로젝트 루트에서 해석됩니다
 
 ```yaml
 version:
@@ -144,13 +126,40 @@ log:
   path: "./vibecraft-app-python-log"
 ```
 
-**중요 설정 사항:**
-- `resource.data`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
-- `resource.mcp`: MCP 서버 구현이 포함된 디렉토리
-- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
-- 모든 상대 경로는 프로젝트 루트에서 해석됩니다
+#### 7. 환경 변수 설정 (`.env` 파일을 프로젝트 루트에 생성)
+**⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
+```bash
+# Windows
+echo. > .env
+# MacOS/Linux
+touch .env
+```
+```bash
+# 커밋 및 공유 금지 !!
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+```
 
 ---
+
+### 🔑 GEMINI API KEY 발급 방법
+
+#### 1.Google AI Studio(https://aistudio.google.com) 접속 후 Get API key 클릭
+![](image.png)
+
+#### 2. Projects 들어가서 '새 프로젝트 만들기' - 입력한 이름으로 프로젝트 생성
+![](image-1.png) | ![](image-2.png) | ![](image-3.png)
+-----------------|------------------|----------------|
+
+#### 3. API keys 들어가서 'API 키 만들기' - 키 이름 지정 - 가져올 프로젝트 선택 (Import project)
+![](image-4.png) | ![](image-6.png) | ![](image-7.png) |
+-----------------|------------------|------------------|
+
+#### 4. 프로젝트 선택 후 '키 만들기' 결과로 API 키 생성 완료
+![](image-8.png) | ![](image-9.png) | ![](image-10.png)
+-----------------|------------------|------------------|
 
 ## 🧠 Engine Architecture
 
@@ -232,14 +241,14 @@ RAG 엔진은 다음 문서 형식을 지원합니다:
 
 ### 파이프라인 실행
 
-1. `main.py`에서 모델 설정:
+1. `main.py`에서 모델 설정 (예시)
 ```python
-# 모델 선택: "claude", "gemini", 또는 "gpt"
+# 모델 선택: "claude" or "gemini" or "gpt"
 engine = "gemini"
 client = VibeCraftClient(engine)
 ```
 
-2. 자동화된 파이프라인 실행:
+2. 자동화된 파이프라인 실행 (예시)
 ```python
 await client.run_pipeline(
     topic_prompt="서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘",
@@ -302,18 +311,22 @@ $ python main.py
 🎤 파일 경로를 입력하세요: (예: ./samples/dining.csv)
 
 🚦 Step 1: 주제 선택
+
 1. 분석 목표와 기대되는 인과관계
 .
 .
 .
+
 2. 필요한 데이터의 종류와 변수
 .
 .
 .
+
 3. 주요 분석 관점 (독립변수, 종속변수, 조절변수 등)
 .
 .
 .
+
 4. 예상되는 시각화 방향
 .
 .
@@ -358,6 +371,7 @@ restaurant_nm     full_address                 food_cat       main_menu         
 .
 .
 .
+
 ✅ 결론 및 추가 분석 제안
 .
 .
