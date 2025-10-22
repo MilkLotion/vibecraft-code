@@ -2,9 +2,8 @@ version:
   server: "1.0.0"
 
 resource:
-  # 상대 경로 사용 (크로스 플랫폼 호환)
-  data: "./storage"
-  mcp: "./mcp_agent/servers"
+  data: "[YOUR_PATH]/vibecraft-backend/storage"
+  mcp: "[YOUR_PATH]/vibecraft-backend/mcp_agent/servers"
 
 path:
   chat: "./chat-data"
