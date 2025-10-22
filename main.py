@@ -22,8 +22,8 @@ async def main():
         topic = input("🎤 주제를 입력하세요: ").strip()
         file = input("🎤 파일 경로를 입력하세요: ").strip()
 
-        # topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
-        # file = r"./samples/sample.csv"
+        # topic = "서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘"
+        # file = r"./samples/dining.csv"
 
         await client.run_pipeline(topic, file)
         await client.chat_loop()
