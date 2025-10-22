@@ -73,15 +73,13 @@ uv init
 # pyproject.toml과 uv.lock을 기반으로 모든 의존성 자동 설치
 uv sync
 ```
-
-**설치되는 주요 패키지** (총 165개):
+**설치되는 주요 패키지**:
 - `langchain`, `langchain-anthropic`, `langchain-google-genai` - AI 모델 통합
 - `mcp[cli]` - Model Context Protocol 클라이언트
 - `chromadb`, `sentence-transformers` - RAG 벡터 데이터베이스
 - `pandas`, `numpy` - 데이터 처리
-- `fastapi`, `pydantic` - API 및 데이터 검증
 
-#### 5. Node.js 확인 (MCP 서버용 - Future work)
+#### 5. Node.js 확인 (MCP 서버용)
 ```bash
 # Download and install Node.js from the official website:
 # 👉 https://nodejs.org
@@ -90,28 +88,9 @@ npm install -g @google/gemini-cli
 npm install -g vibecraft-agent
 ```
 
-#### 6. 환경 변수 설정 (`.env` 파일을 프로젝트 루트에 생성)
-- `.env.example` 파일을 복사하여 `.env` 파일을 생성
-
-**⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
-```bash
-# Windows
-copy .env.example .env
-# MacOS/Linux
-cp .env.example .env
-```
-
-생성된 `.env` 파일을 열어 실제 API 키를 입력하세요:
-
+#### 6. 프로젝트 설정 구성
+필요시 `config-development.yml`을 환경에 맞게 수정하세요.
 ```text
-OPENAI_API_KEY=your_openai_api_key_here
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
-GOOGLE_API_KEY=your_google_api_key_here```
-
-### 🔑 GEMINI API KEY 발급 방법
-
-`config-development.yml`을 환경에 맞게 수정하세요:
 ```yaml
 version:
   server: "1.0.0"
@@ -126,7 +105,7 @@ path:
   chroma: "./chroma-db"          # RAG 벡터 데이터베이스
 
 log:
-  path: "./vibecraft-app-python-log"
+  path: "./vibecraft-code-python-log"
 ```
 
 **중요 설정 사항:**
@@ -136,6 +115,26 @@ log:
 - `path.file`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
 - `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
 - 모든 상대 경로는 프로젝트 루트에서 해석됩니다
+
+#### 7. 환경 변수 설정
+**⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
+```bash
+# .env.example을 복사
+# Windows
+copy .env.example .env
+# MacOS/Linux
+cp .env.example .env
+```
+생성된 `.env` 파일을 열어 실제 API 키를 입력하세요:
+```bash
+# .env
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+```
+
+### 🔑 GEMINI API KEY 발급 방법
 
 #### 1.Google AI Studio(https://aistudio.google.com) 접속 후 Get API key 클릭
 ![](image.png)
