@@ -12,4 +12,4 @@ path:
   chroma: "./chroma-db"
 
 log:
-  path: "./vibecraft-app-python-log"
+  path: "./vibecraft-code-python-log"
