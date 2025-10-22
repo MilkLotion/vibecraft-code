@@ -96,8 +96,8 @@ version:
   server: "1.0.0"
 
 resource:
-  data: "[YOUR_PATH]/vibecraft-backend/storage"
-  mcp: "[YOUR_PATH]/vibecraft-backend/mcp_agent/servers"
+  data: "[YOUR_PATH]/vibecraft-code/storage"
+  mcp: "[YOUR_PATH]/vibecraft-code/mcp_agent/servers"
 
 path:
   chat: "./chat-data"            # 채팅 기록
