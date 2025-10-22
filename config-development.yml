@@ -2,10 +2,9 @@ version:
   server: "1.0.0"
 
 resource:
-#  data: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/storage"
-#  mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/mcp_agent/servers"
-  data: "C:/Users/Administrator/Desktop/Aircok/vibecraft-code/storage"
-  mcp: "C:/Users/Administrator/Desktop/Aircok/vibecraft-code/mcp_agent/servers"
+  # 상대 경로 사용 (크로스 플랫폼 호환)
+  data: "./storage"
+  mcp: "./mcp_agent/servers"
 
 path:
   chat: "./chat-data"
